@@ -3,6 +3,7 @@ package org.calendarmanagement.service;
 import lombok.RequiredArgsConstructor;
 import org.calendarmanagement.dto.CreateScheduleRequest;
 import org.calendarmanagement.dto.CreateScheduleResponse;
+import org.calendarmanagement.dto.GetScheduleResponse;
 import org.calendarmanagement.entity.Author;
 import org.calendarmanagement.entity.Schedule;
 import org.calendarmanagement.repository.AuthorRepository;
@@ -27,7 +28,8 @@ public class ScheduleService {
         Author author;
         // 존재하지 않는 작성자이면 생성
         if(!existence){
-            author = new Author(request.getAuthorName(), request.getPassword());
+            author = authorRepository.save(new Author(request.getAuthorName(), request.getPassword()));
+
         }else{
             // 이미 존재하는 작성자이면 찾아오기
             author = authorRepository.findByName(request.getAuthorName());
@@ -41,5 +43,16 @@ public class ScheduleService {
         return new CreateScheduleResponse(savedSchedule.getId(), savedSchedule.getTitle(), savedSchedule.getContent()
                 ,author.getName(),savedSchedule.getCreatedDate(),savedSchedule.getModifiedDate());
 
+    }
+
+    @Transactional
+    public GetScheduleResponse getOneSchedule(Long scheduleId) {
+
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
+                () -> new IllegalStateException("존재하지 않는 일정입니다.")
+        );
+
+        return new GetScheduleResponse(schedule.getId(),schedule.getTitle(),schedule.getContent()
+                ,schedule.getAuthor().getName(),schedule.getCreatedDate(),schedule.getModifiedDate());
     }
 }
