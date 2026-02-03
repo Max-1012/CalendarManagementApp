@@ -11,6 +11,8 @@ import org.calendarmanagement.repository.ScheduleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ScheduleService {
@@ -45,7 +47,7 @@ public class ScheduleService {
 
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public GetScheduleResponse getOneSchedule(Long scheduleId) {
 
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
@@ -54,5 +56,20 @@ public class ScheduleService {
 
         return new GetScheduleResponse(schedule.getId(),schedule.getTitle(),schedule.getContent()
                 ,schedule.getAuthor().getName(),schedule.getCreatedDate(),schedule.getModifiedDate());
+    }
+
+    @Transactional(readOnly = true)
+    public List<GetScheduleResponse> getSchedules(String name) {
+        List<Schedule> schedules;
+        List<GetScheduleResponse> responseSchedules;
+        if(name.isEmpty()){
+            schedules = scheduleRepository.findAll();
+        }else{
+            Author author = authorRepository.findByName(name);
+            schedules = author.getSchedules();
+        }
+        return schedules.stream().map(schedule -> new GetScheduleResponse(schedule.getId(), schedule.getTitle(), schedule.getContent()
+                , schedule.getAuthor().getName(), schedule.getCreatedDate(), schedule.getModifiedDate())).toList();
+
     }
 }
