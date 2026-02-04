@@ -33,8 +33,8 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedules")
-    public ResponseEntity<List<GetScheduleResponse>> getAllScheduleByAuthor(@RequestParam(defaultValue = "") String name){
-        List<GetScheduleResponse> response = scheduleService.getSchedules(name);
+    public ResponseEntity<List<GetScheduleResponse>> getAllScheduleByAuthor(@RequestParam(defaultValue = "") String author){
+        List<GetScheduleResponse> response = scheduleService.getSchedules(author);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
