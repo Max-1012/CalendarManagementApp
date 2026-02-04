@@ -38,9 +38,14 @@ public class ScheduleController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PatchMapping("/schedules/{schduleId}")
-    public ResponseEntity<ModifyScheduleResponse> modifySchedule(@RequestParam String name, String title){
-
+    @PatchMapping("/schedules/{scheduleId}")
+    public ResponseEntity<ModifyScheduleResponse> modifySchedule(
+            @PathVariable Long scheduleId,
+            @RequestParam(defaultValue = "") String password,
+            @RequestParam(defaultValue = "") String author,
+            @RequestParam(defaultValue = "") String title){
+            ModifyScheduleResponse response = scheduleService.modifySchedule(scheduleId,password,author,title);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 

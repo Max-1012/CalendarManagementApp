@@ -3,6 +3,9 @@ package org.calendarmanagement.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -13,12 +16,14 @@ public class Schedule extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @Column(nullable = false)
     private String title;
 
     @Column(nullable = false)
     private String content;
 
+    @Setter
     @Column(nullable = false)
     private String author;
 
@@ -31,4 +36,5 @@ public class Schedule extends BaseEntity {
         this.author = author;
         this.password = password;
     }
+
 }

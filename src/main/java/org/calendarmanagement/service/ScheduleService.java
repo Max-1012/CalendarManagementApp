@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.calendarmanagement.dto.CreateScheduleRequest;
 import org.calendarmanagement.dto.CreateScheduleResponse;
 import org.calendarmanagement.dto.GetScheduleResponse;
+import org.calendarmanagement.dto.ModifyScheduleResponse;
 import org.calendarmanagement.entity.Schedule;
 import org.calendarmanagement.repository.ScheduleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -46,18 +48,50 @@ public class ScheduleService {
     @Transactional(readOnly = true)
     public List<GetScheduleResponse> getSchedules(String author) {
         List<Schedule> schedules;
-        List<GetScheduleResponse> responseSchedules;
+//        List<GetScheduleResponse> responseSchedules;
         // 작성자를 지정하지 않으면
         if(author.isEmpty()){
             schedules = scheduleRepository.findAll();
         }else{
             // 작성자를 지정하면
             schedules = scheduleRepository.findAll().stream().filter(
-                    schedule -> schedule.getTitle().equals(author)
+                    schedule -> schedule.getAuthor().equals(author)
             ).toList();
         }
-        return schedules.stream().map(schedule -> new GetScheduleResponse(schedule.getId(), schedule.getTitle(), schedule.getContent()
-                , schedule.getAuthor(), schedule.getCreatedDate(), schedule.getModifiedDate())).toList();
+        return schedules.stream().map(schedule -> new GetScheduleResponse(schedule.getId(), schedule.getTitle(), schedule.getContent(),
+                schedule.getAuthor(), schedule.getCreatedDate(), schedule.getModifiedDate())).toList();
 
+    }
+
+    // TODO : 예외처리
+    @Transactional
+    public ModifyScheduleResponse modifySchedule(Long scheduleId, String password, String author, String title) {
+        // 더티체킹. 1. 영속상태
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
+                () -> new IllegalStateException("존재하지 않는 일정입니다.")
+        );
+        // 비밀번호 체크
+        if(password.isEmpty()) {
+            throw new IllegalStateException("비밀번호를 입력해주세요.");
+        }else if(!schedule.getPassword().equals(password)){
+            throw new IllegalStateException("비밀번호가 틀립니다.");
+        }
+        // 비밀번호가 일치하면
+        if(author.isEmpty() && title.isEmpty()){
+            throw new IllegalStateException("수정할 내용이 없습니다.");
+        }
+        if(!author.isEmpty()){
+            // 작성자명을 전달받은 경우 수정
+            schedule.setAuthor(author);
+        }
+        if(!title.isEmpty()){
+            // 일정 제목을 전달받은 경우 수정
+            schedule.setTitle(title);
+        }
+        // 수정일을 수정한 시점으로 변경
+        schedule.setModifiedDate(LocalDateTime.now());
+
+        return new ModifyScheduleResponse(schedule.getId(),schedule.getTitle(), schedule.getContent(),
+                schedule.getAuthor(),schedule.getCreatedDate(),schedule.getModifiedDate());
     }
 }
