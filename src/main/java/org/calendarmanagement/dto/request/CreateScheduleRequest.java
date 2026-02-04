@@ -1,4 +1,4 @@
-package org.calendarmanagement.dto;
+package org.calendarmanagement.dto.request;
 
 import lombok.Getter;
 

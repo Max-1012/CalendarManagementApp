@@ -34,8 +34,8 @@ public class Schedule extends BaseEntity {
     private String password;
 
 
-    @OneToMany(mappedBy = "schedule")
-    private final List<Comment> commentList = new ArrayList<>();
+//    @OneToMany(mappedBy = "schedule")
+//    private final List<Comment> commentList = new ArrayList<>();
 
     public Schedule(String title, String content, String author, String password) {
         this.title = title;
@@ -43,13 +43,13 @@ public class Schedule extends BaseEntity {
         this.author = author;
         this.password = password;
     }
-
-    public void addComment(Comment comment){
-        this.commentList.add(comment);
-    }
-
-    public int getCommentCount(){
-        return commentList.size();
-    }
+//
+//    public void addComment(Comment comment){
+//        this.commentList.add(comment);
+//    }
+//
+//    public int getCommentCount(){
+//        return commentList.size();
+//    }
 
 }

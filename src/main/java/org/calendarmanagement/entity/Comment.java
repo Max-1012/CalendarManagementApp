@@ -3,20 +3,23 @@ package org.calendarmanagement.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @Entity
 @Table(name="comments")
 @NoArgsConstructor
 public class Comment extends BaseEntity{
+
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="COMMENT_ID")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name="SCHEDULE_ID")
-    private Schedule schedule;
+//    @ManyToOne
+//    @JoinColumn(name="SCHEDULE_ID")
+//    private Schedule schedule;
+
+    @Column(nullable = false)
+    private Long scheduleId;
 
     @Column(nullable = false)
     private String content;
@@ -27,8 +30,8 @@ public class Comment extends BaseEntity{
     @Column(nullable = false)
     private String password;
 
-    public Comment(Schedule schedule, String content, String author, String password) {
-        this.schedule = schedule;
+    public Comment(Long scheduleId, String content, String author, String password) {
+        this.scheduleId = scheduleId;
         this.content = content;
         this.author = author;
         this.password = password;

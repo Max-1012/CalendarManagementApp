@@ -1,4 +1,4 @@
-package org.calendarmanagement.dto;
+package org.calendarmanagement.dto.response;
 
 import lombok.Getter;
 import java.time.LocalDateTime;

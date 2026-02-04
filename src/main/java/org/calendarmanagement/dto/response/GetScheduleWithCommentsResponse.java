@@ -1,13 +1,13 @@
-package org.calendarmanagement.dto;
+package org.calendarmanagement.dto.response;
 
 import lombok.Getter;
-import org.calendarmanagement.entity.Comment;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 public class GetScheduleWithCommentsResponse {
+    // 일정 id
     private final Long id;
     // 일정 제목
     private final String title;

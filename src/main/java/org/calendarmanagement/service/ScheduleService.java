@@ -1,8 +1,8 @@
 package org.calendarmanagement.service;
 
 import lombok.RequiredArgsConstructor;
-import org.calendarmanagement.dto.*;
-import org.calendarmanagement.entity.Comment;
+import org.calendarmanagement.dto.request.CreateScheduleRequest;
+import org.calendarmanagement.dto.response.*;
 import org.calendarmanagement.entity.Schedule;
 import org.calendarmanagement.repository.ScheduleRepository;
 import org.springframework.stereotype.Service;
@@ -15,13 +15,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
+    private final CommentService commentService;
 
     @Transactional
     public CreateScheduleResponse save(CreateScheduleRequest request) {
         if(request.getAuthor()==null || request.getTitle()==null || request.getPassword()==null){
             throw new IllegalStateException("일정 제목, 작성자명, 비밀번호는 필수입니다.");
         }
-
         // 스케쥴 생성
         Schedule newSchedule = new Schedule(request.getTitle(), request.getContent(),request.getAuthor(), request.getPassword());
         // 스케쥴 저장
@@ -38,42 +38,38 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new IllegalStateException("존재하지 않는 일정입니다.")
         );
-
         return new GetScheduleResponse(schedule.getId(),schedule.getTitle(),schedule.getContent()
                 ,schedule.getAuthor(),schedule.getCreatedDate(),schedule.getModifiedDate());
     }
 
-    @Transactional
+    //TODO
+    @Transactional(readOnly = true)
     public GetScheduleWithCommentsResponse getOneScheduleWithComments(Long scheduleId) {
+        // 스케쥴 찾아오기
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new IllegalStateException("존재하지 않는 일정입니다.")
         );
-
-        List<Comment> commentList = schedule.getCommentList();
-        List<GetCommentResponse> commentResponse = commentList.stream().map(comment -> new GetCommentResponse(comment.getId(), comment.getContent(), comment.getAuthor(),
-                comment.getCreatedDate(), comment.getModifiedDate())).toList();
-
+        // 댓글 찾아오기
+        List<GetCommentResponse> commentResponse =  commentService.getCommentsByScheduleId(scheduleId);
 
         return new GetScheduleWithCommentsResponse(schedule.getId(),schedule.getTitle(),schedule.getContent()
                 ,schedule.getAuthor(),schedule.getCreatedDate(),schedule.getModifiedDate(),commentResponse);
     }
 
     @Transactional(readOnly = true)
-    public List<GetScheduleResponse> getSchedules(String author) {
-        List<Schedule> schedules;
-//        List<GetScheduleResponse> responseSchedules;
-        // 작성자를 지정하지 않으면
-        if(author.isEmpty()){
-            schedules = scheduleRepository.findAll();
-        }else{
-            // 작성자를 지정하면
-            schedules = scheduleRepository.findAll().stream().filter(
-                    schedule -> schedule.getAuthor().equals(author)
-            ).toList();
-        }
+    public List<GetScheduleResponse> getAllSchedules() {
+        List<Schedule> schedules = scheduleRepository.findAll();
         return schedules.stream().map(schedule -> new GetScheduleResponse(schedule.getId(), schedule.getTitle(), schedule.getContent(),
                 schedule.getAuthor(), schedule.getCreatedDate(), schedule.getModifiedDate())).toList();
+    }
 
+    @Transactional(readOnly = true)
+    public List<GetScheduleResponse> getSchedulesByAuthor(String author) {
+        List<Schedule> schedules = scheduleRepository.findAll().stream().filter(
+                    schedule -> schedule.getAuthor().equals(author)).toList();
+
+        return schedules.stream().map(schedule -> new GetScheduleResponse(schedule.getId(), schedule.getTitle(), schedule.getContent(),
+                schedule.getAuthor(), schedule.getCreatedDate(), schedule.getModifiedDate())).toList();
     }
 
     // TODO : 예외처리
@@ -120,6 +116,4 @@ public class ScheduleService {
         }
         scheduleRepository.deleteById(scheduleId);
     }
-
-
 }

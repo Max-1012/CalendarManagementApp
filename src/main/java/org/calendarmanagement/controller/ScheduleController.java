@@ -1,7 +1,11 @@
 package org.calendarmanagement.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.calendarmanagement.dto.*;
+import org.calendarmanagement.dto.request.CreateScheduleRequest;
+import org.calendarmanagement.dto.response.CreateScheduleResponse;
+import org.calendarmanagement.dto.response.GetScheduleResponse;
+import org.calendarmanagement.dto.response.GetScheduleWithCommentsResponse;
+import org.calendarmanagement.dto.response.ModifyScheduleResponse;
 import org.calendarmanagement.service.ScheduleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,23 +26,28 @@ public class ScheduleController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
     }
-
-    // TODO : 일정 단건 조회 업그레이드. 단건 조회 시, 등록된 댓글들을 포함하여 응답하기
-    @GetMapping("/schedules/{scheduleId}")
-    public ResponseEntity<GetScheduleWithCommentsResponse> getOneSchedule(@PathVariable Long scheduleId){
-        GetScheduleWithCommentsResponse response = scheduleService.getOneScheduleWithComments(scheduleId);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
+//
 //    @GetMapping("/schedules/{scheduleId}")
 //    public ResponseEntity<GetScheduleResponse> getOneSchedule(@PathVariable Long scheduleId){
 //        GetScheduleResponse response = scheduleService.getOneSchedule(scheduleId);
 //        return ResponseEntity.status(HttpStatus.OK).body(response);
 //    }
 
+    // TODO : 일정 단건 조회 업그레이드. 단건 조회 시, 등록된 댓글들을 포함하여 응답하기
+    @GetMapping("/schedules/{scheduleId}")
+    public ResponseEntity<GetScheduleWithCommentsResponse> getOneScheduleWithComments(@PathVariable Long scheduleId){
+        GetScheduleWithCommentsResponse response = scheduleService.getOneScheduleWithComments(scheduleId);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
     @GetMapping("/schedules")
-    public ResponseEntity<List<GetScheduleResponse>> getAllScheduleByAuthor(@RequestParam(defaultValue = "") String author){
-        List<GetScheduleResponse> response = scheduleService.getSchedules(author);
+    public ResponseEntity<List<GetScheduleResponse>> getAllScheduleByAuthor(@RequestParam(required = false) String author){
+        List<GetScheduleResponse> response;
+        if(author==null){
+             response = scheduleService.getAllSchedules();
+        }else{
+             response = scheduleService.getSchedulesByAuthor(author);
+        }
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

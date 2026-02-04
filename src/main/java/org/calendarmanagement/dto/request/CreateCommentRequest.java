@@ -1,7 +1,6 @@
-package org.calendarmanagement.dto;
+package org.calendarmanagement.dto.request;
 
 import lombok.Getter;
-import org.calendarmanagement.entity.Schedule;
 
 @Getter
 public class CreateCommentRequest {
