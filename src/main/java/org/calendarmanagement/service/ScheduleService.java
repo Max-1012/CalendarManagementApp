@@ -68,17 +68,17 @@ public class ScheduleService {
     public ModifyScheduleResponse modifySchedule(Long scheduleId, String password, String author, String title) {
         // 더티체킹. 1. 영속상태
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalStateException("존재하지 않는 일정입니다.")
+                () -> new IllegalStateException("존재하지 않는 일정입니다")
         );
         // 비밀번호 체크
         if(password.isEmpty()) {
-            throw new IllegalStateException("비밀번호를 입력해주세요.");
+            throw new IllegalStateException("비밀번호를 입력해주세요");
         }else if(!schedule.getPassword().equals(password)){
-            throw new IllegalStateException("비밀번호가 틀립니다.");
+            throw new IllegalStateException("비밀번호가 틀립니다");
         }
         // 비밀번호가 일치하면
         if(author.isEmpty() && title.isEmpty()){
-            throw new IllegalStateException("수정할 내용이 없습니다.");
+            throw new IllegalStateException("수정할 내용이 없습니다");
         }
         if(!author.isEmpty()){
             // 작성자명을 전달받은 경우 수정
@@ -93,5 +93,18 @@ public class ScheduleService {
 
         return new ModifyScheduleResponse(schedule.getId(),schedule.getTitle(), schedule.getContent(),
                 schedule.getAuthor(),schedule.getCreatedDate(),schedule.getModifiedDate());
+    }
+
+    public void deleteSchedule(Long scheduleId,String password) {
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
+                () -> new IllegalStateException("존재하지 않는 일정입니다")
+        );
+        if(password.isEmpty()){
+            throw new IllegalStateException("비밀번호를 입력해주세요");
+        }
+        if(!schedule.getPassword().equals(password)){
+            throw new IllegalStateException("비밀번호가 틀립니다");
+        }
+        scheduleRepository.deleteById(scheduleId);
     }
 }
