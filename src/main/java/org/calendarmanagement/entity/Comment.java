@@ -5,37 +5,32 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Entity
-@Table(name="schedules")
+@Table(name="comments")
 @NoArgsConstructor
-public class Schedule extends BaseEntity {
-
+public class Comment extends BaseEntity{
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="SCHEDULE_ID")
+    @Column(name="COMMENT_ID")
     private Long id;
 
-    @Setter
-    @Column(nullable = false)
-    private String title;
+    @ManyToOne
+    @JoinColumn(name="SCHEDULE_ID")
+    private Schedule schedule;
 
     @Column(nullable = false)
     private String content;
 
-    @Setter
     @Column(nullable = false)
     private String author;
 
     @Column(nullable = false)
     private String password;
 
-    public Schedule(String title, String content, String author, String password) {
-        this.title = title;
+    public Comment(Schedule schedule, String content, String author, String password) {
+        this.schedule = schedule;
         this.content = content;
         this.author = author;
         this.password = password;
     }
-
 }
