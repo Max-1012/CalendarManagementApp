@@ -1,10 +1,7 @@
 package org.calendarmanagement.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.calendarmanagement.dto.CreateScheduleRequest;
-import org.calendarmanagement.dto.CreateScheduleResponse;
-import org.calendarmanagement.dto.GetScheduleResponse;
-import org.calendarmanagement.dto.ModifyScheduleResponse;
+import org.calendarmanagement.dto.*;
 import org.calendarmanagement.service.ScheduleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,11 +23,18 @@ public class ScheduleController {
 
     }
 
+    // TODO : 일정 단건 조회 업그레이드. 단건 조회 시, 등록된 댓글들을 포함하여 응답하기
     @GetMapping("/schedules/{scheduleId}")
-    public ResponseEntity<GetScheduleResponse> getOneSchedule(@PathVariable Long scheduleId){
-        GetScheduleResponse response = scheduleService.getOneSchedule(scheduleId);
+    public ResponseEntity<GetScheduleWithCommentsResponse> getOneSchedule(@PathVariable Long scheduleId){
+        GetScheduleWithCommentsResponse response = scheduleService.getOneScheduleWithComments(scheduleId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+//    @GetMapping("/schedules/{scheduleId}")
+//    public ResponseEntity<GetScheduleResponse> getOneSchedule(@PathVariable Long scheduleId){
+//        GetScheduleResponse response = scheduleService.getOneSchedule(scheduleId);
+//        return ResponseEntity.status(HttpStatus.OK).body(response);
+//    }
 
     @GetMapping("/schedules")
     public ResponseEntity<List<GetScheduleResponse>> getAllScheduleByAuthor(@RequestParam(defaultValue = "") String author){
@@ -47,6 +51,7 @@ public class ScheduleController {
             ModifyScheduleResponse response = scheduleService.modifySchedule(scheduleId,password,author,title);
             return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
 
     @DeleteMapping("/schedules/{scheduleId}")
     public ResponseEntity<Void> deleteSchedule(

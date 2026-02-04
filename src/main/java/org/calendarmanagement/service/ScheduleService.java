@@ -1,10 +1,8 @@
 package org.calendarmanagement.service;
 
 import lombok.RequiredArgsConstructor;
-import org.calendarmanagement.dto.CreateScheduleRequest;
-import org.calendarmanagement.dto.CreateScheduleResponse;
-import org.calendarmanagement.dto.GetScheduleResponse;
-import org.calendarmanagement.dto.ModifyScheduleResponse;
+import org.calendarmanagement.dto.*;
+import org.calendarmanagement.entity.Comment;
 import org.calendarmanagement.entity.Schedule;
 import org.calendarmanagement.repository.ScheduleRepository;
 import org.springframework.stereotype.Service;
@@ -43,6 +41,21 @@ public class ScheduleService {
 
         return new GetScheduleResponse(schedule.getId(),schedule.getTitle(),schedule.getContent()
                 ,schedule.getAuthor(),schedule.getCreatedDate(),schedule.getModifiedDate());
+    }
+
+    @Transactional
+    public GetScheduleWithCommentsResponse getOneScheduleWithComments(Long scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
+                () -> new IllegalStateException("존재하지 않는 일정입니다.")
+        );
+
+        List<Comment> commentList = schedule.getCommentList();
+        List<GetCommentResponse> commentResponse = commentList.stream().map(comment -> new GetCommentResponse(comment.getId(), comment.getContent(), comment.getAuthor(),
+                comment.getCreatedDate(), comment.getModifiedDate())).toList();
+
+
+        return new GetScheduleWithCommentsResponse(schedule.getId(),schedule.getTitle(),schedule.getContent()
+                ,schedule.getAuthor(),schedule.getCreatedDate(),schedule.getModifiedDate(),commentResponse);
     }
 
     @Transactional(readOnly = true)
@@ -107,4 +120,6 @@ public class ScheduleService {
         }
         scheduleRepository.deleteById(scheduleId);
     }
+
+
 }
