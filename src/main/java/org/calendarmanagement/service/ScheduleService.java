@@ -1,6 +1,8 @@
 package org.calendarmanagement.service;
 
 import lombok.RequiredArgsConstructor;
+import org.calendarmanagement.Exception.NoSuchInstanceException;
+import org.calendarmanagement.common.ExceptionHandler;
 import org.calendarmanagement.dto.request.CreateScheduleRequest;
 import org.calendarmanagement.dto.response.*;
 import org.calendarmanagement.entity.Schedule;
@@ -10,18 +12,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final CommentService commentService;
+    private final ExceptionHandler exceptionHandler = new ExceptionHandler();
 
-    @Transactional
-    public CreateScheduleResponse save(CreateScheduleRequest request) {
-        if(request.getAuthor()==null || request.getTitle()==null || request.getPassword()==null){
-            throw new IllegalStateException("일정 제목, 작성자명, 비밀번호는 필수입니다.");
-        }
+    public CreateScheduleResponse save(CreateScheduleRequest request) throws Exception{
+        exceptionHandler.validateCreateScheduleRequest(request);
         // 스케쥴 생성
         Schedule newSchedule = new Schedule(request.getTitle(), request.getContent(),request.getAuthor(), request.getPassword());
         // 스케쥴 저장
@@ -33,21 +35,19 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public GetScheduleResponse getOneSchedule(Long scheduleId) {
-
+    public GetScheduleResponse getOneSchedule(Long scheduleId) throws Exception{
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalStateException("존재하지 않는 일정입니다.")
+                () -> new NoSuchInstanceException("존재하지 않는 일정입니다.")
         );
         return new GetScheduleResponse(schedule.getId(),schedule.getTitle(),schedule.getContent()
                 ,schedule.getAuthor(),schedule.getCreatedDate(),schedule.getModifiedDate());
     }
 
-    //TODO
     @Transactional(readOnly = true)
-    public GetScheduleWithCommentsResponse getOneScheduleWithComments(Long scheduleId) {
+    public GetScheduleWithCommentsResponse getOneScheduleWithComments(Long scheduleId) throws Exception{
         // 스케쥴 찾아오기
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalStateException("존재하지 않는 일정입니다.")
+                () -> new NoSuchInstanceException("존재하지 않는 일정입니다.")
         );
         // 댓글 찾아오기
         List<GetCommentResponse> commentResponse =  commentService.getCommentsByScheduleId(scheduleId);
@@ -72,28 +72,13 @@ public class ScheduleService {
                 schedule.getAuthor(), schedule.getCreatedDate(), schedule.getModifiedDate())).toList();
     }
 
-    // TODO : 예외처리
-    @Transactional
-    public ModifyScheduleResponse modifySchedule(Long scheduleId, String password, String author, String title) {
-        // 더티체킹. 1. 영속상태
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalStateException("존재하지 않는 일정입니다")
-        );
-        // 비밀번호 체크
-        if(password.isEmpty()) {
-            throw new IllegalStateException("비밀번호를 입력해주세요");
-        }else if(!schedule.getPassword().equals(password)){
-            throw new IllegalStateException("비밀번호가 틀립니다");
-        }
-        // 비밀번호가 일치하면
-        if(author.isEmpty() && title.isEmpty()){
-            throw new IllegalStateException("수정할 내용이 없습니다");
-        }
-        if(!author.isEmpty()){
+    public ModifyScheduleResponse modifySchedule(Long scheduleId, String password, String author, String title)throws Exception {
+        Schedule schedule = exceptionHandler.validateModifyScheduleRequest(scheduleId, password, author, title, scheduleRepository);
+        if(!author.isBlank()){
             // 작성자명을 전달받은 경우 수정
             schedule.setAuthor(author);
         }
-        if(!title.isEmpty()){
+        if(!title.isBlank()){
             // 일정 제목을 전달받은 경우 수정
             schedule.setTitle(title);
         }
@@ -104,16 +89,8 @@ public class ScheduleService {
                 schedule.getAuthor(),schedule.getCreatedDate(),schedule.getModifiedDate());
     }
 
-    public void deleteSchedule(Long scheduleId,String password) {
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalStateException("존재하지 않는 일정입니다")
-        );
-        if(password.isEmpty()){
-            throw new IllegalStateException("비밀번호를 입력해주세요");
-        }
-        if(!schedule.getPassword().equals(password)){
-            throw new IllegalStateException("비밀번호가 틀립니다");
-        }
+    public void deleteSchedule(Long scheduleId,String password) throws Exception{
+        exceptionHandler.validateDeleteScheduleRequest(scheduleId,password,scheduleRepository);
         scheduleRepository.deleteById(scheduleId);
     }
 }

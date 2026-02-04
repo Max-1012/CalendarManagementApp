@@ -1,6 +1,7 @@
 package org.calendarmanagement.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.calendarmanagement.Exception.NoSuchInstanceException;
 import org.calendarmanagement.dto.request.CreateCommentRequest;
 import org.calendarmanagement.dto.response.CreateCommentResponse;
 import org.calendarmanagement.service.CommentService;
@@ -18,7 +19,16 @@ public class CommentController {
     public ResponseEntity<CreateCommentResponse> saveComment(
             @PathVariable Long scheduleId,
             @RequestBody CreateCommentRequest request){
-        CreateCommentResponse response = commentService.save(scheduleId,request);
+        CreateCommentResponse response;
+        try{
+            response = commentService.save(scheduleId,request);
+        }catch (Exception e){
+            if(e instanceof NoSuchInstanceException){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }else{
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

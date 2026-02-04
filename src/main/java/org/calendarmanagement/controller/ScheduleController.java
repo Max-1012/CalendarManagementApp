@@ -1,6 +1,8 @@
 package org.calendarmanagement.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.calendarmanagement.Exception.NoSuchInstanceException;
 import org.calendarmanagement.dto.request.CreateScheduleRequest;
 import org.calendarmanagement.dto.response.CreateScheduleResponse;
 import org.calendarmanagement.dto.response.GetScheduleResponse;
@@ -22,7 +24,17 @@ public class ScheduleController {
     @PostMapping("/schedules")
     public ResponseEntity<CreateScheduleResponse> saveSchedule(@RequestBody CreateScheduleRequest request)
     {
-        CreateScheduleResponse response = scheduleService.save(request);
+        CreateScheduleResponse response;
+        try{
+            response = scheduleService.save(request);
+        }catch (Exception e){
+            if(e instanceof NoSuchInstanceException){
+
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }else{
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
     }
@@ -36,7 +48,16 @@ public class ScheduleController {
     // TODO : 일정 단건 조회 업그레이드. 단건 조회 시, 등록된 댓글들을 포함하여 응답하기
     @GetMapping("/schedules/{scheduleId}")
     public ResponseEntity<GetScheduleWithCommentsResponse> getOneScheduleWithComments(@PathVariable Long scheduleId){
-        GetScheduleWithCommentsResponse response = scheduleService.getOneScheduleWithComments(scheduleId);
+        GetScheduleWithCommentsResponse response ;
+        try{
+            response = scheduleService.getOneScheduleWithComments(scheduleId);
+        }catch (Exception e){
+            if(e instanceof NoSuchInstanceException){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }else{
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+        }
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -51,13 +72,23 @@ public class ScheduleController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    //TODO
     @PatchMapping("/schedules/{scheduleId}")
     public ResponseEntity<ModifyScheduleResponse> modifySchedule(
             @PathVariable Long scheduleId,
-            @RequestParam(defaultValue = "") String password,
-            @RequestParam(defaultValue = "") String author,
-            @RequestParam(defaultValue = "") String title){
-            ModifyScheduleResponse response = scheduleService.modifySchedule(scheduleId,password,author,title);
+            @RequestParam String password,
+            @RequestParam(required = false) String author,
+            @RequestParam(required = false) String title){
+        ModifyScheduleResponse response;
+        try{
+            response = scheduleService.modifySchedule(scheduleId,password,author,title);
+        }catch (Exception e){
+            if(e instanceof NoSuchInstanceException){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }else{
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+        }
             return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -65,8 +96,16 @@ public class ScheduleController {
     @DeleteMapping("/schedules/{scheduleId}")
     public ResponseEntity<Void> deleteSchedule(
             @PathVariable Long scheduleId,
-            @RequestParam(defaultValue="") String password){
-        scheduleService.deleteSchedule(scheduleId,password);
+            @RequestParam String password){
+        try{
+            scheduleService.deleteSchedule(scheduleId,password);
+        }catch (Exception e){
+            if(e instanceof NoSuchInstanceException){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }else{
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+        }
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
