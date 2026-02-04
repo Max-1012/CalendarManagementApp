@@ -19,14 +19,16 @@ public class Schedule extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-    // 외래키
-    @ManyToOne
-    @JoinColumn(name = "AUTHOR_ID")
-    private Author author;
+    @Column(nullable = false)
+    private String author;
 
-    public Schedule(String title, String content,Author author) {
+    @Column(nullable = false)
+    private String password;
+
+    public Schedule(String title, String content, String author, String password) {
         this.title = title;
         this.content = content;
         this.author = author;
+        this.password = password;
     }
 }

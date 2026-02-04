@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.calendarmanagement.dto.CreateScheduleRequest;
 import org.calendarmanagement.dto.CreateScheduleResponse;
 import org.calendarmanagement.dto.GetScheduleResponse;
+import org.calendarmanagement.dto.ModifyScheduleResponse;
 import org.calendarmanagement.service.ScheduleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,5 +37,11 @@ public class ScheduleController {
         List<GetScheduleResponse> response = scheduleService.getSchedules(name);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @PatchMapping("/schedules/{schduleId}")
+    public ResponseEntity<ModifyScheduleResponse> modifySchedule(@RequestParam String name, String title){
+
+    }
+
 
 }
