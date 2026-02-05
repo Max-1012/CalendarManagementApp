@@ -21,6 +21,7 @@ public class Schedule extends BaseEntity {
 
     @Setter
     @Column(length = 30, nullable = false)
+
     private String title;
 
     @Column(length = 200, nullable = false)
@@ -33,23 +34,12 @@ public class Schedule extends BaseEntity {
     @Column(length = 20, nullable = false)
     private String password;
 
-
-//    @OneToMany(mappedBy = "schedule")
-//    private final List<Comment> commentList = new ArrayList<>();
-
     public Schedule(String title, String content, String author, String password) {
         this.title = title;
         this.content = content;
         this.author = author;
         this.password = password;
     }
-//
-//    public void addComment(Comment comment){
-//        this.commentList.add(comment);
-//    }
-//
-//    public int getCommentCount(){
-//        return commentList.size();
-//    }
+
 
 }

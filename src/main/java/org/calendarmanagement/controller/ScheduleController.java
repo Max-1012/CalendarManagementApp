@@ -36,12 +36,6 @@ public class ScheduleController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
     }
-//
-//    @GetMapping("/schedules/{scheduleId}")
-//    public ResponseEntity<GetScheduleResponse> getOneSchedule(@PathVariable Long scheduleId){
-//        GetScheduleResponse response = scheduleService.getOneSchedule(scheduleId);
-//        return ResponseEntity.status(HttpStatus.OK).body(response);
-//    }
 
     // TODO : 일정 단건 조회 업그레이드. 단건 조회 시, 등록된 댓글들을 포함하여 응답하기
     @GetMapping("/schedules/{scheduleId}")

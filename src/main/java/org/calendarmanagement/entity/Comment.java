@@ -14,10 +14,6 @@ public class Comment extends BaseEntity{
     @Column(name="COMMENT_ID")
     private Long id;
 
-//    @ManyToOne
-//    @JoinColumn(name="SCHEDULE_ID")
-//    private Schedule schedule;
-
     @Column(nullable = false)
     private Long scheduleId;
 
