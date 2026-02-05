@@ -21,13 +21,13 @@ public class Comment extends BaseEntity{
     @Column(nullable = false)
     private Long scheduleId;
 
-    @Column(nullable = false)
+    @Column(length = 100, nullable = false)
     private String content;
 
-    @Column(nullable = false)
+    @Column(length = 15, nullable = false)
     private String author;
 
-    @Column(nullable = false)
+    @Column(length = 20, nullable = false)
     private String password;
 
     public Comment(Long scheduleId, String content, String author, String password) {

@@ -20,17 +20,17 @@ public class Schedule extends BaseEntity {
     private Long id;
 
     @Setter
-    @Column(nullable = false)
+    @Column(length = 30, nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(length = 200, nullable = false)
     private String content;
 
     @Setter
-    @Column(nullable = false)
+    @Column(length = 15, nullable = false)
     private String author;
 
-    @Column(nullable = false)
+    @Column(length = 20, nullable = false)
     private String password;
 
 

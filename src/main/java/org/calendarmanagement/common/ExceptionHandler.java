@@ -1,15 +1,13 @@
 package org.calendarmanagement.common;
 
-import org.calendarmanagement.Exception.InvalidInputException;
-import org.calendarmanagement.Exception.InvalidRequestException;
-import org.calendarmanagement.Exception.NoSuchInstanceException;
+import org.calendarmanagement.exception.InvalidInputException;
+import org.calendarmanagement.exception.InvalidRequestException;
+import org.calendarmanagement.exception.NoSuchInstanceException;
 import org.calendarmanagement.dto.request.CreateCommentRequest;
 import org.calendarmanagement.dto.request.CreateScheduleRequest;
 import org.calendarmanagement.entity.Schedule;
 import org.calendarmanagement.repository.CommentRepository;
 import org.calendarmanagement.repository.ScheduleRepository;
-
-import java.util.NoSuchElementException;
 
 public class ExceptionHandler {
     public void validateCommentRequest(Long scheduleId, CreateCommentRequest request,

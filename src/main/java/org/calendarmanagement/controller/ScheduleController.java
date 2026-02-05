@@ -1,8 +1,7 @@
 package org.calendarmanagement.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.calendarmanagement.Exception.NoSuchInstanceException;
+import org.calendarmanagement.exception.NoSuchInstanceException;
 import org.calendarmanagement.dto.request.CreateScheduleRequest;
 import org.calendarmanagement.dto.response.CreateScheduleResponse;
 import org.calendarmanagement.dto.response.GetScheduleResponse;
@@ -29,7 +28,6 @@ public class ScheduleController {
             response = scheduleService.save(request);
         }catch (Exception e){
             if(e instanceof NoSuchInstanceException){
-
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }else{
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -62,13 +60,8 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedules")
-    public ResponseEntity<List<GetScheduleResponse>> getAllScheduleByAuthor(@RequestParam(required = false) String author){
-        List<GetScheduleResponse> response;
-        if(author==null){
-             response = scheduleService.getAllSchedules();
-        }else{
-             response = scheduleService.getSchedulesByAuthor(author);
-        }
+    public ResponseEntity<List<GetScheduleResponse>> getAllSchedules(@RequestParam(required = false) String author){
+        List<GetScheduleResponse> response = scheduleService.getAllSchedules(author);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

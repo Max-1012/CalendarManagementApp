@@ -1,7 +1,7 @@
 package org.calendarmanagement.service;
 
 import lombok.RequiredArgsConstructor;
-import org.calendarmanagement.Exception.NoSuchInstanceException;
+import org.calendarmanagement.exception.NoSuchInstanceException;
 import org.calendarmanagement.common.ExceptionHandler;
 import org.calendarmanagement.dto.request.CreateScheduleRequest;
 import org.calendarmanagement.dto.response.*;
@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -56,29 +55,27 @@ public class ScheduleService {
                 ,schedule.getAuthor(),schedule.getCreatedDate(),schedule.getModifiedDate(),commentResponse);
     }
 
-    @Transactional(readOnly = true)
-    public List<GetScheduleResponse> getAllSchedules() {
-        List<Schedule> schedules = scheduleRepository.findAll();
-        return schedules.stream().map(schedule -> new GetScheduleResponse(schedule.getId(), schedule.getTitle(), schedule.getContent(),
-                schedule.getAuthor(), schedule.getCreatedDate(), schedule.getModifiedDate())).toList();
-    }
 
     @Transactional(readOnly = true)
-    public List<GetScheduleResponse> getSchedulesByAuthor(String author) {
-        List<Schedule> schedules = scheduleRepository.findAll().stream().filter(
+    public List<GetScheduleResponse> getAllSchedules(String author) {
+        List<Schedule> schedules;
+        if(author==null){
+            schedules = scheduleRepository.findAll().stream().toList();
+        }else{
+            schedules = scheduleRepository.findAll().stream().filter(
                     schedule -> schedule.getAuthor().equals(author)).toList();
-
+        }
         return schedules.stream().map(schedule -> new GetScheduleResponse(schedule.getId(), schedule.getTitle(), schedule.getContent(),
                 schedule.getAuthor(), schedule.getCreatedDate(), schedule.getModifiedDate())).toList();
     }
 
     public ModifyScheduleResponse modifySchedule(Long scheduleId, String password, String author, String title)throws Exception {
         Schedule schedule = exceptionHandler.validateModifyScheduleRequest(scheduleId, password, author, title, scheduleRepository);
-        if(!author.isBlank()){
+        if(author!=null && !author.isBlank()){
             // 작성자명을 전달받은 경우 수정
             schedule.setAuthor(author);
         }
-        if(!title.isBlank()){
+        if(title!=null && !title.isBlank()){
             // 일정 제목을 전달받은 경우 수정
             schedule.setTitle(title);
         }

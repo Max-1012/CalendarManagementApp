@@ -1,7 +1,6 @@
 package org.calendarmanagement.service;
 
 import lombok.RequiredArgsConstructor;
-import org.calendarmanagement.Exception.NoSuchInstanceException;
 import org.calendarmanagement.common.ExceptionHandler;
 import org.calendarmanagement.dto.request.CreateCommentRequest;
 import org.calendarmanagement.dto.response.CreateCommentResponse;
