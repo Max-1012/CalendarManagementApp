@@ -14,12 +14,14 @@ public class Comment extends BaseEntity{
     @Column(name="comment_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="schedule_id")
+    // 스케쥴이 있어야 댓글이 있음
+    @ManyToOne(fetch = FetchType.LAZY,optional = false) // jpa에서 null 허용 여부
+    @JoinColumn(name="schedule_id",nullable = false) // db에서 null 허용 여부
     private Schedule schedule;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id")
+    // 유저가 있어야 댓글이 있음
+    @ManyToOne(fetch = FetchType.LAZY,optional = false)
+    @JoinColumn(name="user_id",nullable = false)
     private User user;
 
     @Column(nullable = false)

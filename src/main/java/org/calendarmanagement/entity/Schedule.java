@@ -19,8 +19,9 @@ public class Schedule extends BaseEntity {
     @Column(name="schedule_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    // user가 있어야 일정도 있음
+    @ManyToOne(fetch = FetchType.LAZY,optional = false)
+    @JoinColumn(name = "user_id",nullable = false)
     private User user;
 
     @Setter
