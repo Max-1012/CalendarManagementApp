@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.catalina.User;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -16,8 +17,12 @@ import java.util.List;
 public class Schedule extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="SCHEDULE_ID")
+    @Column(name="schedule_id")
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Setter
     @Column(nullable = false)
@@ -26,30 +31,10 @@ public class Schedule extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-    @Setter
-    @Column(nullable = false)
-    private String author;
-
-    @Column(nullable = false)
-    private String password;
-
-
-//    @OneToMany(mappedBy = "schedule")
-//    private final List<Comment> commentList = new ArrayList<>();
-
-    public Schedule(String title, String content, String author, String password) {
+    public Schedule(Long id, User user, String title, String content) {
+        this.id = id;
+        this.user = user;
         this.title = title;
         this.content = content;
-        this.author = author;
-        this.password = password;
     }
-//
-//    public void addComment(Comment comment){
-//        this.commentList.add(comment);
-//    }
-//
-//    public int getCommentCount(){
-//        return commentList.size();
-//    }
-
 }

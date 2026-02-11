@@ -1,7 +1,9 @@
 package org.calendarmanagement.Exception;
 
-public class InvalidRequestException extends Exception {
+import org.springframework.http.HttpStatus;
+
+public class InvalidRequestException extends ServiceException {
     public InvalidRequestException(String message) {
-        super(message);
+        super(HttpStatus.BAD_REQUEST, message);;
     }
 }

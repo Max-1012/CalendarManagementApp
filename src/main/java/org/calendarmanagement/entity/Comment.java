@@ -11,29 +11,24 @@ import lombok.NoArgsConstructor;
 public class Comment extends BaseEntity{
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="COMMENT_ID")
+    @Column(name="comment_id")
     private Long id;
 
-//    @ManyToOne
-//    @JoinColumn(name="SCHEDULE_ID")
-//    private Schedule schedule;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="schedule_id")
+    private Schedule schedule;
 
-    @Column(nullable = false)
-    private Long scheduleId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="user_id")
+    private User user;
 
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
-    private String author;
-
-    @Column(nullable = false)
-    private String password;
-
-    public Comment(Long scheduleId, String content, String author, String password) {
-        this.scheduleId = scheduleId;
+    public Comment(Long id, Schedule schedule, User user, String content) {
+        this.id = id;
+        this.schedule = schedule;
+        this.user = user;
         this.content = content;
-        this.author = author;
-        this.password = password;
     }
 }

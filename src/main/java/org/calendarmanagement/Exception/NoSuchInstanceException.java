@@ -1,7 +1,9 @@
 package org.calendarmanagement.Exception;
 
-public class NoSuchInstanceException extends Exception{
+import org.springframework.http.HttpStatus;
+
+public class NoSuchInstanceException extends ServiceException{
     public NoSuchInstanceException(String message) {
-        super(message);
+        super(HttpStatus.NOT_FOUND, message);
     }
 }

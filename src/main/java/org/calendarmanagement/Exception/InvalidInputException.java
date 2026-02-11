@@ -1,7 +1,8 @@
 package org.calendarmanagement.Exception;
+import org.springframework.http.HttpStatus;
 
-public class InvalidInputException extends Exception {
+public class InvalidInputException extends ServiceException {
     public InvalidInputException(String message) {
-        super(message);
+        super(HttpStatus.BAD_REQUEST, message);
     }
 }
