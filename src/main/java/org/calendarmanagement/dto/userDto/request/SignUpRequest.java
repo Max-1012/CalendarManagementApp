@@ -1,0 +1,17 @@
+package org.calendarmanagement.dto.userDto.request;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+
+@Getter
+public class SignUpRequest {
+
+    @NotBlank(message = "이름을 입력해주세요!")
+    private String userName;
+    @NotBlank @Email
+    private String email;
+    @NotBlank @Size(min=8,max=20,message = "비밀번호는 {min}자 이상, {max}자 이하여야 합니다!")
+    private String password;
+}

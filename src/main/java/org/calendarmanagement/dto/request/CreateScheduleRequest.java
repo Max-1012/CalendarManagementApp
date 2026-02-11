@@ -8,8 +8,4 @@ public class CreateScheduleRequest {
     private String title;
     // 일정 내용
     private String content;
-    // 작성자명
-    private String author;
-    // 비밀번호
-    private String password;
 }

@@ -21,6 +21,7 @@ public class ScheduleController {
 
     private final ScheduleService scheduleService;
 
+    // 스케쥴 생성
     @PostMapping("/schedules")
     public ResponseEntity<CreateScheduleResponse> saveSchedule(@RequestBody CreateScheduleRequest request)
     {
