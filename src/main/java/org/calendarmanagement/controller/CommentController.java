@@ -2,8 +2,8 @@ package org.calendarmanagement.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.calendarmanagement.Exception.NoSuchInstanceException;
-import org.calendarmanagement.dto.request.CreateCommentRequest;
-import org.calendarmanagement.dto.response.CreateCommentResponse;
+import org.calendarmanagement.dto.commentDto.request.CreateCommentRequest;
+import org.calendarmanagement.dto.commentDto.response.CreateCommentResponse;
 import org.calendarmanagement.service.CommentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -8,9 +8,9 @@ import lombok.Getter;
 @Getter
 public class SignUpRequest {
 
-    @NotBlank(message = "이름을 입력해주세요!")
+    @NotBlank(message = "이름은 필수 입력 값입니다.")
     private String userName;
-    @NotBlank @Email
+    @NotBlank @Email(message = "이메일 형식에 맞는 입력이 필요합니다.")
     private String email;
     @NotBlank @Size(min=8,max=20,message = "비밀번호는 {min}자 이상, {max}자 이하여야 합니다!")
     private String password;

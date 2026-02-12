@@ -2,10 +2,8 @@ package org.calendarmanagement.Exception;
 
 import org.springframework.http.HttpStatus;
 
-public class PasswordMismatchException extends CustomServiceException {
-    public PasswordMismatchException(String message) {
-
+public class NoSuchScheduleException extends CustomServiceException {
+    public NoSuchScheduleException(String message) {
         super(HttpStatus.NOT_FOUND, message);
     }
-
 }

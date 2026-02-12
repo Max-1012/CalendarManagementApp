@@ -1,4 +1,4 @@
-package org.calendarmanagement.dto.response;
+package org.calendarmanagement.dto.commentDto.response;
 
 import lombok.Getter;
 

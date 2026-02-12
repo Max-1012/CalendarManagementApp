@@ -56,7 +56,7 @@ public class UserController {
     // TODO : 단건 조회
     @GetMapping("/users/{userId}")
     public ResponseEntity<GetUserResponse> getOneUser(@PathVariable Long userId){
-        GetUserResponse response = userService.getUser(userId);
+        GetUserResponse response = userService.getOneUser(userId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
     // TODO : 수정

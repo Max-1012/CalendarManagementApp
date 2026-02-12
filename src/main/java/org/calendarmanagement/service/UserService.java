@@ -52,7 +52,7 @@ public class UserService {
     }
 
     // 유저 단건 조회
-    public GetUserResponse getUser(Long userId) {
+    public GetUserResponse getOneUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new NoSuchUserException("존재하지 않는 유저입니다.")
         );
@@ -67,5 +67,11 @@ public class UserService {
         // 더티체킹
         user.setUserName(request.getUserName());
         return GetUserResponse.from(user);
+    }
+
+    public User getUserById(Long userId){
+        return userRepository.findById(userId).orElseThrow(
+                () -> new NoSuchUserException("존재하지 않는 유저입니다.")
+        );
     }
 }

@@ -28,11 +28,11 @@ public class Schedule extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
+    @Setter
     @Column(nullable = false)
     private String content;
 
-    public Schedule(Long id, User user, String title, String content) {
-        this.id = id;
+    public Schedule( User user, String title, String content) {
         this.user = user;
         this.title = title;
         this.content = content;

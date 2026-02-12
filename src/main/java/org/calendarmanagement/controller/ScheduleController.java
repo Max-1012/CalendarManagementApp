@@ -1,13 +1,16 @@
 package org.calendarmanagement.controller;
 
+import jakarta.validation.Path;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.calendarmanagement.Exception.NoSuchInstanceException;
-import org.calendarmanagement.dto.request.CreateScheduleRequest;
-import org.calendarmanagement.dto.response.CreateScheduleResponse;
-import org.calendarmanagement.dto.response.GetScheduleResponse;
-import org.calendarmanagement.dto.response.GetScheduleWithCommentsResponse;
-import org.calendarmanagement.dto.response.ModifyScheduleResponse;
+import org.calendarmanagement.dto.scheduleDto.request.CreateScheduleRequest;
+import org.calendarmanagement.dto.scheduleDto.request.ModifyScheduleRequest;
+import org.calendarmanagement.dto.scheduleDto.response.CreateScheduleResponse;
+import org.calendarmanagement.dto.scheduleDto.response.GetScheduleResponse;
+import org.calendarmanagement.dto.scheduleDto.response.GetScheduleWithCommentsResponse;
+import org.calendarmanagement.dto.scheduleDto.response.ModifyScheduleResponse;
+import org.calendarmanagement.dto.userDto.SessionUser;
 import org.calendarmanagement.service.ScheduleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,92 +24,50 @@ public class ScheduleController {
 
     private final ScheduleService scheduleService;
 
-    // 스케쥴 생성
+    // 일정 생성
     @PostMapping("/schedules")
-    public ResponseEntity<CreateScheduleResponse> saveSchedule(@RequestBody CreateScheduleRequest request)
+    public ResponseEntity<CreateScheduleResponse> saveSchedule(
+            @SessionAttribute(name = "loginUser",required = false) SessionUser sessionUser,
+            @Valid @RequestBody CreateScheduleRequest request)
     {
-        CreateScheduleResponse response;
-        try{
-            response = scheduleService.save(request);
-        }catch (Exception e){
-            if(e instanceof NoSuchInstanceException){
-
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }else{
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-            }
-        }
+        CreateScheduleResponse response = scheduleService.save(sessionUser,request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
-
     }
-//
-//    @GetMapping("/schedules/{scheduleId}")
-//    public ResponseEntity<GetScheduleResponse> getOneSchedule(@PathVariable Long scheduleId){
-//        GetScheduleResponse response = scheduleService.getOneSchedule(scheduleId);
-//        return ResponseEntity.status(HttpStatus.OK).body(response);
-//    }
 
-    // TODO : 일정 단건 조회 업그레이드. 단건 조회 시, 등록된 댓글들을 포함하여 응답하기
+    // 일정 단건 조회
     @GetMapping("/schedules/{scheduleId}")
     public ResponseEntity<GetScheduleWithCommentsResponse> getOneScheduleWithComments(@PathVariable Long scheduleId){
-        GetScheduleWithCommentsResponse response ;
-        try{
-            response = scheduleService.getOneScheduleWithComments(scheduleId);
-        }catch (Exception e){
-            if(e instanceof NoSuchInstanceException){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }else{
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-            }
-        }
+        GetScheduleWithCommentsResponse response = scheduleService.getOneScheduleWithComments(scheduleId);
+
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    // 일정 전체 조회
     @GetMapping("/schedules")
-    public ResponseEntity<List<GetScheduleResponse>> getAllScheduleByAuthor(@RequestParam(required = false) String author){
-        List<GetScheduleResponse> response;
-        if(author==null){
-             response = scheduleService.getAllSchedules();
-        }else{
-             response = scheduleService.getSchedulesByAuthor(author);
-        }
+    public ResponseEntity<List<GetScheduleResponse>> getAllScheduleByAuthor(@RequestParam(required = false) String userName){
+        List<GetScheduleResponse> response = scheduleService.getAllSchedules(userName);
+
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    //TODO
+    // 일정 수정(제목과 내용 수정 가능)
     @PatchMapping("/schedules/{scheduleId}")
-    public ResponseEntity<ModifyScheduleResponse> modifySchedule(
+    public ResponseEntity<ModifyScheduleResponse> updateSchedule(
+            @SessionAttribute(name="loginUser",required = false) SessionUser sessionUser,
             @PathVariable Long scheduleId,
-            @RequestParam String password,
-            @RequestParam(required = false) String author,
-            @RequestParam(required = false) String title){
-        ModifyScheduleResponse response;
-        try{
-            response = scheduleService.modifySchedule(scheduleId,password,author,title);
-        }catch (Exception e){
-            if(e instanceof NoSuchInstanceException){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }else{
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-            }
-        }
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            @Valid @RequestBody ModifyScheduleRequest request)
+    {
+        ModifyScheduleResponse response = scheduleService.modifySchedule(sessionUser,scheduleId,request);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 
     @DeleteMapping("/schedules/{scheduleId}")
     public ResponseEntity<Void> deleteSchedule(
-            @PathVariable Long scheduleId,
-            @RequestParam String password){
-        try{
-            scheduleService.deleteSchedule(scheduleId,password);
-        }catch (Exception e){
-            if(e instanceof NoSuchInstanceException){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }else{
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-            }
-        }
+            @SessionAttribute(name="loginUser",required = false) SessionUser sessionUser,
+            @PathVariable Long scheduleId)
+    {   scheduleService.deleteSchedule(sessionUser, scheduleId);
+
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
