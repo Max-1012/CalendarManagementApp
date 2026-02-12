@@ -45,7 +45,6 @@ public class UserController {
         }
         session.invalidate();
         return ResponseEntity.noContent().build();
-
     }
     // TODO : 전체 조회
     @GetMapping("/users")
@@ -60,7 +59,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
     // TODO : 수정
-    @PutMapping("/users")
+    @PatchMapping("/users")
     public ResponseEntity<GetUserResponse> updateUser(@SessionAttribute(name="loginUser",required = false)SessionUser sessionUser,
                                                       @RequestBody UpdateUserRequest request){
         if(sessionUser==null){

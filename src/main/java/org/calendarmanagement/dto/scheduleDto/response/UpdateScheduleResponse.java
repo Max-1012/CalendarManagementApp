@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
  * @param createdDate  작성일
  * @param modifiedDate 수정일
  */
-public record ModifyScheduleResponse(Long id, String userName, String title, String content, LocalDateTime createdDate,
+public record UpdateScheduleResponse(Long id, String userName, String title, String content, LocalDateTime createdDate,
                                      LocalDateTime modifiedDate) {
-    public static ModifyScheduleResponse from(Schedule schedule) {
-        return new ModifyScheduleResponse(schedule.getId(), schedule.getUser().getUserName(), schedule.getTitle(),
+    public static UpdateScheduleResponse from(Schedule schedule) {
+        return new UpdateScheduleResponse(schedule.getId(), schedule.getUser().getUserName(), schedule.getTitle(),
                 schedule.getContent(), schedule.getCreatedDate(), schedule.getModifiedDate());
     }
 }

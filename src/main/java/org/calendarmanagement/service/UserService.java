@@ -2,6 +2,8 @@ package org.calendarmanagement.service;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.calendarmanagement.Exception.DuplicateEmailException;
+import org.calendarmanagement.Exception.DuplicateUserNameException;
 import org.calendarmanagement.Exception.NoSuchUserException;
 import org.calendarmanagement.Exception.PasswordMismatchException;
 import org.calendarmanagement.config.PasswordEncoder;
@@ -28,6 +30,11 @@ public class UserService {
     // 유저 생성
     @Transactional
     public SignUpResponse createUser(@Valid SignUpRequest request) {
+        boolean existence = userRepository.existsByUserName(request.getUserName());
+        if(existence){throw new DuplicateUserNameException("이미 존재하는 이름입니다.");}
+        existence = userRepository.existsByEmail(request.getEmail());
+        if(existence){throw new DuplicateEmailException("이미 존재하는 이메일입니다.");}
+
         User user = new User(request.getUserName(), request.getEmail(), passwordEncoder.encode(request.getPassword()));
         User savedUser = userRepository.save(user);
         return SignUpResponse.from(savedUser);

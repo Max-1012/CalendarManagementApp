@@ -13,6 +13,4 @@ public interface ScheduleRepository extends JpaRepository<Schedule,Long> {
 
     @Query("SELECT s from Schedule s where s.user.userName = :userName")
     List<Schedule> findAllByUserName(@Param("userName") String userName);
-
-    List<Schedule> user(User user);
 }

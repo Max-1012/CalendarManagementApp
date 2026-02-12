@@ -3,6 +3,7 @@ package org.calendarmanagement.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Entity
@@ -24,11 +25,11 @@ public class Comment extends BaseEntity{
     @JoinColumn(name="user_id",nullable = false)
     private User user;
 
+    @Setter
     @Column(nullable = false)
     private String content;
 
-    public Comment(Long id, Schedule schedule, User user, String content) {
-        this.id = id;
+    public Comment(Schedule schedule, User user, String content) {
         this.schedule = schedule;
         this.user = user;
         this.content = content;

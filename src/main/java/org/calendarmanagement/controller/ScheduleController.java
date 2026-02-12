@@ -1,15 +1,13 @@
 package org.calendarmanagement.controller;
 
-import jakarta.validation.Path;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.calendarmanagement.Exception.NoSuchInstanceException;
 import org.calendarmanagement.dto.scheduleDto.request.CreateScheduleRequest;
-import org.calendarmanagement.dto.scheduleDto.request.ModifyScheduleRequest;
+import org.calendarmanagement.dto.scheduleDto.request.UpdateScheduleRequest;
 import org.calendarmanagement.dto.scheduleDto.response.CreateScheduleResponse;
 import org.calendarmanagement.dto.scheduleDto.response.GetScheduleResponse;
 import org.calendarmanagement.dto.scheduleDto.response.GetScheduleWithCommentsResponse;
-import org.calendarmanagement.dto.scheduleDto.response.ModifyScheduleResponse;
+import org.calendarmanagement.dto.scheduleDto.response.UpdateScheduleResponse;
 import org.calendarmanagement.dto.userDto.SessionUser;
 import org.calendarmanagement.service.ScheduleService;
 import org.springframework.http.HttpStatus;
@@ -44,7 +42,8 @@ public class ScheduleController {
 
     // 일정 전체 조회
     @GetMapping("/schedules")
-    public ResponseEntity<List<GetScheduleResponse>> getAllScheduleByAuthor(@RequestParam(required = false) String userName){
+    public ResponseEntity<List<GetScheduleResponse>> getAllSchedules(
+            @RequestParam(required = false) String userName){
         List<GetScheduleResponse> response = scheduleService.getAllSchedules(userName);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -52,12 +51,12 @@ public class ScheduleController {
 
     // 일정 수정(제목과 내용 수정 가능)
     @PatchMapping("/schedules/{scheduleId}")
-    public ResponseEntity<ModifyScheduleResponse> updateSchedule(
+    public ResponseEntity<UpdateScheduleResponse> updateSchedule(
             @SessionAttribute(name="loginUser",required = false) SessionUser sessionUser,
             @PathVariable Long scheduleId,
-            @Valid @RequestBody ModifyScheduleRequest request)
+            @Valid @RequestBody UpdateScheduleRequest request)
     {
-        ModifyScheduleResponse response = scheduleService.modifySchedule(sessionUser,scheduleId,request);
+        UpdateScheduleResponse response = scheduleService.modifySchedule(sessionUser,scheduleId,request);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

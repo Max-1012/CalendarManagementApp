@@ -17,13 +17,13 @@ public class User extends BaseEntity{
     private Long id;
 
     @Setter
-    @Column(nullable = false)
+    @Column(nullable = false,unique = true)
     private String userName;
 
-    @Column(nullable = false)
+    @Column(nullable = false,unique = true,length = 100)
     private String email;
 
-    @Column(nullable=false)
+    @Column(nullable=false,length = 100)    // 암호화된 비밀번호(해시화? 암호화? 될 수 있어서 length 넉넉하게 설정)
     private String password;
 
     public User(String userName, String email, String password) {
