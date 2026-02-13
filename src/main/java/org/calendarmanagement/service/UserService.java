@@ -37,7 +37,7 @@ public class UserService {
 
         User user = new User(request.getUserName(), request.getEmail(), passwordEncoder.encode(request.getPassword()));
         User savedUser = userRepository.save(user);
-        return SignUpResponse.from(savedUser);
+        return SignUpResponse.of(savedUser);
     }
 
     // 로그인
@@ -54,7 +54,7 @@ public class UserService {
 
     // 전체 유저 조회
     public List<GetUserResponse> getAllUsers() {
-        return userRepository.findAll().stream().map(GetUserResponse::from).toList();
+        return userRepository.findAll().stream().map(GetUserResponse::of).toList();
 
     }
 
@@ -63,7 +63,7 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new NoSuchUserException("존재하지 않는 유저입니다.")
         );
-        return GetUserResponse.from(user);
+        return GetUserResponse.of(user);
     }
 
     @Transactional
@@ -73,7 +73,7 @@ public class UserService {
         );
         // 더티체킹
         user.setUserName(request.getUserName());
-        return GetUserResponse.from(user);
+        return GetUserResponse.of(user);
     }
 
     public User getUserById(Long userId){

@@ -20,7 +20,7 @@ public class UpdateCommentResponse {
         CreatedDate = createdDate;
         this.modifiedDate = modifiedDate;
     }
-    public static UpdateCommentResponse from(Comment comment){
+    public static UpdateCommentResponse of(Comment comment){
         return new UpdateCommentResponse(comment.getId(),comment.getSchedule().getId(),comment.getUser().getUserName(),
                 comment.getContent(),comment.getCreatedDate(),comment.getModifiedDate());
     }

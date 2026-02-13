@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 public record GetUserResponse(Long id, String userName, String email, LocalDateTime createdDate,
                               LocalDateTime modifiedDate) {
-    public static GetUserResponse from(User user) {
+    public static GetUserResponse of(User user) {
         return new GetUserResponse(user.getId(), user.getUserName(), user.getEmail(),
                 user.getCreatedDate(), user.getModifiedDate());
     }

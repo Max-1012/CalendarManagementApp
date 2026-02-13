@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
  */
 public record GetScheduleResponse(Long id, String userName, String title, String content, LocalDateTime createdDate,
                                   LocalDateTime modifiedDate) {
-    public static GetScheduleResponse from(Schedule schedule) {
+    public static GetScheduleResponse of(Schedule schedule) {
         return new GetScheduleResponse(schedule.getId(), schedule.getUser().getUserName(), schedule.getTitle(),
                 schedule.getContent(), schedule.getCreatedDate(), schedule.getModifiedDate());
     }

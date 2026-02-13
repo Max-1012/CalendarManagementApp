@@ -25,7 +25,7 @@ public class CreateCommentResponse {
         this.modifiedDate = modifiedDate;
     }
 
-    public static CreateCommentResponse from(Comment comment){
+    public static CreateCommentResponse of(Comment comment){
         return new CreateCommentResponse(comment.getId(),comment.getSchedule().getId(),
                 comment.getUser().getUserName(),comment.getContent(),
                 comment.getCreatedDate(),comment.getModifiedDate());

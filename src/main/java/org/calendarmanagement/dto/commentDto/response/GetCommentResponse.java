@@ -22,7 +22,7 @@ public class GetCommentResponse {
         CreatedDate = createdDate;
         this.modifiedDate = modifiedDate;
     }
-    public static GetCommentResponse from(Comment comment){
+    public static GetCommentResponse of(Comment comment){
         return new GetCommentResponse(comment.getId(),comment.getSchedule().getId(),comment.getUser().getUserName(),
                 comment.getContent(),comment.getCreatedDate(),comment.getModifiedDate());
     }

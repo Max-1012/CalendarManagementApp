@@ -35,7 +35,7 @@ public class CommentService {
         User user = userService.getUserById(sessionUser.getId());
         Comment comment = new Comment(schedule, user, request.getContent());
         Comment savedComment = commentRepository.save(comment);
-        return CreateCommentResponse.from(savedComment);
+        return CreateCommentResponse.of(savedComment);
     }
     // TODO : 댓글 단건 조회
 
@@ -43,7 +43,7 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new NoSuchCommentException("존재하지 않는 댓글입니다.")
         );
-        return GetCommentResponse.from(comment);
+        return GetCommentResponse.of(comment);
 
     }
     // 댓글 전체 조회
@@ -51,7 +51,7 @@ public class CommentService {
 
     public List<GetCommentResponse> getCommentsByScheduleId(Long scheduleId) {
         List<Comment> commentList = commentRepository.findCommentsByScheduleId(scheduleId);
-        return commentList.stream().map(GetCommentResponse::from).toList();
+        return commentList.stream().map(GetCommentResponse::of).toList();
     }
     // 댓글 업데이트
 
@@ -66,7 +66,7 @@ public class CommentService {
         }
         comment.setContent(request.getContent());
         comment.setModifiedDate(LocalDateTime.now());
-        return UpdateCommentResponse.from(comment);
+        return UpdateCommentResponse.of(comment);
     }
     @Transactional
     public void deleteComment(Long commentId) {

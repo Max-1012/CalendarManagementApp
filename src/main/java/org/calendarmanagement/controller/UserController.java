@@ -47,7 +47,7 @@ public class UserController {
         SessionUser sessionUser = userService.login(request);
         session.setAttribute("loginUser",sessionUser);
 
-        LoginResponse response = LoginResponse.from(sessionUser);
+        LoginResponse response = LoginResponse.of(sessionUser);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
     //  로그아웃

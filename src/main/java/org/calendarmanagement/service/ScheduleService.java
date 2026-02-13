@@ -59,7 +59,7 @@ public class ScheduleService {
         // 댓글 찾아오기 -> commentService 이용하지 않고 찾아야 함...
 //        List<GetCommentResponse> commentList =  commentService.getCommentsByScheduleId(scheduleId);
         List<Comment> comments = commentRepository.findCommentsByScheduleId(scheduleId);
-        List<GetCommentResponse> commentList = comments.stream().map(GetCommentResponse::from).toList();
+        List<GetCommentResponse> commentList = comments.stream().map(GetCommentResponse::of).toList();
         return GetScheduleWithCommentsResponse.from(schedule,commentList);
     }
 
@@ -73,7 +73,7 @@ public class ScheduleService {
         }
         return schedules.stream()
                 .sorted(Comparator.comparing(Schedule::getModifiedDate).reversed())
-                .map(GetScheduleResponse::from).toList();
+                .map(GetScheduleResponse::of).toList();
     }
 
     // 일정 수정
@@ -95,7 +95,7 @@ public class ScheduleService {
             schedule.setContent(request.getContent());
         }
         schedule.setModifiedDate(LocalDateTime.now());
-        return UpdateScheduleResponse.from(schedule);
+        return UpdateScheduleResponse.of(schedule);
     }
 
 
