@@ -22,13 +22,26 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-    // TODO : 회원가입
+    // 회원가입
     @PostMapping("/users/signUp")
     public ResponseEntity<SignUpResponse> signUp(@Valid @RequestBody SignUpRequest request) {
         SignUpResponse response = userService.createUser(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-    // TODO : 로그인
+    // TODO : 회원 탈퇴
+    @DeleteMapping("/users/withdraw")
+    public ResponseEntity<Void> withdraw(@SessionAttribute(name="loginUser",required = false)
+                                             SessionUser sessionUser, HttpSession session){
+        if(sessionUser==null){
+            return ResponseEntity.badRequest().build();
+        }
+        userService.deleteUser(sessionUser.getId());
+        session.invalidate();
+        return ResponseEntity.noContent().build();
+    }
+
+
+    // 로그인
     @PostMapping("/users/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request, HttpSession session){
         SessionUser sessionUser = userService.login(request);
@@ -37,7 +50,7 @@ public class UserController {
         LoginResponse response = LoginResponse.from(sessionUser);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
-    // TODO : 로그아웃
+    //  로그아웃
     @PostMapping("/users/logout")
     public ResponseEntity<Void> logout(@SessionAttribute(name="loginUser",required = false)SessionUser sessionUser,HttpSession session) {
         if(sessionUser==null){
@@ -46,19 +59,19 @@ public class UserController {
         session.invalidate();
         return ResponseEntity.noContent().build();
     }
-    // TODO : 전체 조회
+    // 전체 조회
     @GetMapping("/users")
     public ResponseEntity<List<GetUserResponse>> getAllUsers(){
         List<GetUserResponse> userList = userService.getAllUsers();
         return ResponseEntity.status(HttpStatus.OK).body(userList);
     }
-    // TODO : 단건 조회
+    // 단건 조회
     @GetMapping("/users/{userId}")
     public ResponseEntity<GetUserResponse> getOneUser(@PathVariable Long userId){
         GetUserResponse response = userService.getOneUser(userId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
-    // TODO : 수정
+    //  수정
     @PatchMapping("/users")
     public ResponseEntity<GetUserResponse> updateUser(@SessionAttribute(name="loginUser",required = false)SessionUser sessionUser,
                                                       @RequestBody UpdateUserRequest request){

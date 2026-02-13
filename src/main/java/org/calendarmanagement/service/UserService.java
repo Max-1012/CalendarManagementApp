@@ -81,4 +81,8 @@ public class UserService {
                 () -> new NoSuchUserException("존재하지 않는 유저입니다.")
         );
     }
+
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
 }
