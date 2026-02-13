@@ -1,7 +1,6 @@
 package org.calendarmanagement.dto.commentDto.response;
 
 import org.calendarmanagement.entity.Comment;
-
 import java.time.LocalDateTime;
 
 public class UpdateCommentResponse {

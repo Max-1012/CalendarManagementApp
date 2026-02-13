@@ -66,6 +66,7 @@ public class UserService {
         return GetUserResponse.of(user);
     }
 
+    // 유저 이름 업데이트
     @Transactional
     public GetUserResponse update(Long id, UpdateUserRequest request) {
         User user = userRepository.findById(id).orElseThrow(
@@ -76,13 +77,15 @@ public class UserService {
         return GetUserResponse.of(user);
     }
 
+    // 유저 탈퇴
+    @Transactional
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
+
     public User getUserById(Long userId){
         return userRepository.findById(userId).orElseThrow(
                 () -> new NoSuchUserException("존재하지 않는 유저입니다.")
         );
-    }
-
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
     }
 }

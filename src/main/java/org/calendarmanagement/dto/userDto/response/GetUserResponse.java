@@ -1,7 +1,6 @@
 package org.calendarmanagement.dto.userDto.response;
 
 import org.calendarmanagement.entity.User;
-
 import java.time.LocalDateTime;
 
 public record GetUserResponse(Long id, String userName, String email, LocalDateTime createdDate,

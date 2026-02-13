@@ -2,7 +2,6 @@ package org.calendarmanagement.dto.scheduleDto.response;
 
 import org.calendarmanagement.entity.Schedule;
 import org.calendarmanagement.entity.User;
-
 import java.time.LocalDateTime;
 
 /**

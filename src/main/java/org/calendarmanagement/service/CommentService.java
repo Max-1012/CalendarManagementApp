@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -37,24 +36,18 @@ public class CommentService {
         Comment savedComment = commentRepository.save(comment);
         return CreateCommentResponse.of(savedComment);
     }
-    // TODO : 댓글 단건 조회
 
+    // 댓글 단건 조회
     public GetCommentResponse getOneComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new NoSuchCommentException("존재하지 않는 댓글입니다.")
         );
         return GetCommentResponse.of(comment);
-
     }
-    // 댓글 전체 조회
 
+    // 댓글 전체 조회는, scheduleService에서 스케쥴 단건 조회 시 commentRepository 사용해서 구현
 
-    public List<GetCommentResponse> getCommentsByScheduleId(Long scheduleId) {
-        List<Comment> commentList = commentRepository.findCommentsByScheduleId(scheduleId);
-        return commentList.stream().map(GetCommentResponse::of).toList();
-    }
     // 댓글 업데이트
-
     @Transactional
     public UpdateCommentResponse update(SessionUser sessionUser, Long commentId, UpdateCommentRequest request) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(
@@ -68,6 +61,8 @@ public class CommentService {
         comment.setModifiedDate(LocalDateTime.now());
         return UpdateCommentResponse.of(comment);
     }
+
+    // 댓글 삭제
     @Transactional
     public void deleteComment(Long commentId) {
         boolean existence = commentRepository.existsById(commentId);

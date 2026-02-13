@@ -2,7 +2,6 @@ package org.calendarmanagement.dto.commentDto.response;
 
 import lombok.Getter;
 import org.calendarmanagement.entity.Comment;
-
 import java.time.LocalDateTime;
 
 @Getter
