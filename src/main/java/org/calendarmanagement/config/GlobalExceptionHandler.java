@@ -1,7 +1,9 @@
 package org.calendarmanagement.config;
 
-import org.calendarmanagement.Exception.CustomServiceException;
+import org.calendarmanagement.exception.CustomServiceException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -14,4 +16,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(ex.getStatus())
                 .body(ex.getMessage());
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ex) {
+        return ResponseEntity.status(ex.getStatusCode())
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleValidationException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ex.getMessage());
+    }
+
 }

@@ -1,8 +1,8 @@
 package org.calendarmanagement.service;
 
 import lombok.RequiredArgsConstructor;
-import org.calendarmanagement.Exception.NoSuchCommentException;
-import org.calendarmanagement.Exception.UnAuthorizedUserException;
+import org.calendarmanagement.exception.NoSuchCommentException;
+import org.calendarmanagement.exception.UnAuthorizedUserException;
 import org.calendarmanagement.dto.commentDto.request.CreateCommentRequest;
 import org.calendarmanagement.dto.commentDto.request.UpdateCommentRequest;
 import org.calendarmanagement.dto.commentDto.response.CreateCommentResponse;

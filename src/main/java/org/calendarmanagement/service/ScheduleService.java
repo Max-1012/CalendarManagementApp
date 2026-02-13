@@ -2,9 +2,9 @@ package org.calendarmanagement.service;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.calendarmanagement.Exception.NoSuchScheduleException;
-import org.calendarmanagement.Exception.UnAuthenticatedUserException;
-import org.calendarmanagement.Exception.UnAuthorizedUserException;
+import org.calendarmanagement.exception.NoSuchScheduleException;
+import org.calendarmanagement.exception.UnAuthenticatedUserException;
+import org.calendarmanagement.exception.UnAuthorizedUserException;
 import org.calendarmanagement.dto.commentDto.response.GetCommentResponse;
 import org.calendarmanagement.dto.scheduleDto.request.CreateScheduleRequest;
 import org.calendarmanagement.dto.scheduleDto.request.UpdateScheduleRequest;

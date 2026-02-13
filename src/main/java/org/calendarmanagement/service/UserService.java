@@ -2,10 +2,10 @@ package org.calendarmanagement.service;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.calendarmanagement.Exception.DuplicateEmailException;
-import org.calendarmanagement.Exception.DuplicateUserNameException;
-import org.calendarmanagement.Exception.NoSuchUserException;
-import org.calendarmanagement.Exception.PasswordMismatchException;
+import org.calendarmanagement.exception.DuplicateEmailException;
+import org.calendarmanagement.exception.DuplicateUserNameException;
+import org.calendarmanagement.exception.NoSuchUserException;
+import org.calendarmanagement.exception.PasswordMismatchException;
 import org.calendarmanagement.config.PasswordEncoder;
 import org.calendarmanagement.dto.userDto.request.UpdateUserRequest;
 import org.calendarmanagement.dto.userDto.response.GetUserResponse;
