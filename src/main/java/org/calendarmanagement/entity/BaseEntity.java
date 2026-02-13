@@ -1,6 +1,5 @@
 package org.calendarmanagement.entity;
 
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,11 +16,9 @@ public abstract class BaseEntity {
 
     @CreatedDate
     @Column(name="CREATED_DATE",updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdDate;
 
     @LastModifiedDate
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name="MODIFIED_DATE")
     @Setter
     private LocalDateTime modifiedDate;

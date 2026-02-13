@@ -3,6 +3,7 @@ package org.calendarmanagement.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Entity
@@ -11,25 +12,26 @@ import lombok.NoArgsConstructor;
 public class Comment extends BaseEntity{
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="COMMENT_ID")
+    @Column(name="comment_id")
     private Long id;
 
-    @Column(nullable = false)
-    private Long scheduleId;
+    // 스케쥴이 있어야 댓글이 있음
+    @ManyToOne(fetch = FetchType.LAZY,optional = false) // jpa에서 null 허용 여부
+    @JoinColumn(name="schedule_id",nullable = false) // db에서 null 허용 여부
+    private Schedule schedule;
 
-    @Column(length = 100, nullable = false)
+    // 유저가 있어야 댓글이 있음
+    @ManyToOne(fetch = FetchType.LAZY,optional = false)
+    @JoinColumn(name="user_id",nullable = false)
+    private User user;
+
+    @Setter
+    @Column(nullable = false)
     private String content;
 
-    @Column(length = 15, nullable = false)
-    private String author;
-
-    @Column(length = 20, nullable = false)
-    private String password;
-
-    public Comment(Long scheduleId, String content, String author, String password) {
-        this.scheduleId = scheduleId;
+    public Comment(Schedule schedule, User user, String content) {
+        this.schedule = schedule;
+        this.user = user;
         this.content = content;
-        this.author = author;
-        this.password = password;
     }
 }

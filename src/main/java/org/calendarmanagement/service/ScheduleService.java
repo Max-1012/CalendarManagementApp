@@ -1,93 +1,119 @@
 package org.calendarmanagement.service;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.calendarmanagement.exception.NoSuchInstanceException;
-import org.calendarmanagement.common.ExceptionHandler;
-import org.calendarmanagement.dto.request.CreateScheduleRequest;
-import org.calendarmanagement.dto.response.*;
+import org.calendarmanagement.Exception.NoSuchScheduleException;
+import org.calendarmanagement.Exception.UnAuthenticatedUserException;
+import org.calendarmanagement.Exception.UnAuthorizedUserException;
+import org.calendarmanagement.dto.commentDto.response.GetCommentResponse;
+import org.calendarmanagement.dto.scheduleDto.request.CreateScheduleRequest;
+import org.calendarmanagement.dto.scheduleDto.request.UpdateScheduleRequest;
+import org.calendarmanagement.dto.scheduleDto.response.CreateScheduleResponse;
+import org.calendarmanagement.dto.scheduleDto.response.GetScheduleResponse;
+import org.calendarmanagement.dto.scheduleDto.response.GetScheduleWithCommentsResponse;
+import org.calendarmanagement.dto.scheduleDto.response.UpdateScheduleResponse;
+import org.calendarmanagement.dto.userDto.SessionUser;
+import org.calendarmanagement.entity.Comment;
 import org.calendarmanagement.entity.Schedule;
+import org.calendarmanagement.entity.User;
+import org.calendarmanagement.repository.CommentRepository;
 import org.calendarmanagement.repository.ScheduleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
-    private final CommentService commentService;
-    private final ExceptionHandler exceptionHandler = new ExceptionHandler();
+    //private final CommentService commentService;
+    private final UserService userService;
+    private final CommentRepository commentRepository;
 
-    public CreateScheduleResponse save(CreateScheduleRequest request) throws Exception{
-        exceptionHandler.validateCreateScheduleRequest(request);
-        // 스케쥴 생성
-        Schedule newSchedule = new Schedule(request.getTitle(), request.getContent(),request.getAuthor(), request.getPassword());
-        // 스케쥴 저장
+    // 일정 생성
+    @Transactional
+    public CreateScheduleResponse save(SessionUser sessionUser, CreateScheduleRequest request){
+        if(sessionUser==null){
+            throw new UnAuthenticatedUserException("로그인하지 않은 유저입니다.");
+        }
+        // 유저 확인
+        User user = userService.getUserById(sessionUser.getId());
+        // 일정 생성
+        Schedule newSchedule = new Schedule(user, request.getTitle(), request.getContent());
+        // 일정 저장
         Schedule savedSchedule = scheduleRepository.save(newSchedule);
-
-        return new CreateScheduleResponse(savedSchedule.getId(), savedSchedule.getTitle(), savedSchedule.getContent()
-                , savedSchedule.getAuthor(), savedSchedule.getCreatedDate(),savedSchedule.getModifiedDate());
-
+        return CreateScheduleResponse.from(user,savedSchedule);
     }
 
-    @Transactional(readOnly = true)
-    public GetScheduleResponse getOneSchedule(Long scheduleId) throws Exception{
+    // 일정 단건 조회
+    public GetScheduleWithCommentsResponse getOneScheduleWithComments(Long scheduleId){
+        // 일정 찾아오기
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                () -> new NoSuchInstanceException("존재하지 않는 일정입니다.")
+                () -> new NoSuchScheduleException("존재하지 않는 일정입니다.")
         );
-        return new GetScheduleResponse(schedule.getId(),schedule.getTitle(),schedule.getContent()
-                ,schedule.getAuthor(),schedule.getCreatedDate(),schedule.getModifiedDate());
+        // 댓글 찾아오기 -> commentService 이용하지 않고 찾아야 함...
+//        List<GetCommentResponse> commentList =  commentService.getCommentsByScheduleId(scheduleId);
+        List<Comment> comments = commentRepository.findCommentsByScheduleId(scheduleId);
+        List<GetCommentResponse> commentList = comments.stream().map(GetCommentResponse::from).toList();
+        return GetScheduleWithCommentsResponse.from(schedule,commentList);
     }
 
-    @Transactional(readOnly = true)
-    public GetScheduleWithCommentsResponse getOneScheduleWithComments(Long scheduleId) throws Exception{
-        // 스케쥴 찾아오기
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                () -> new NoSuchInstanceException("존재하지 않는 일정입니다.")
-        );
-        // 댓글 찾아오기
-        List<GetCommentResponse> commentResponse =  commentService.getCommentsByScheduleId(scheduleId);
-
-        return new GetScheduleWithCommentsResponse(schedule.getId(),schedule.getTitle(),schedule.getContent()
-                ,schedule.getAuthor(),schedule.getCreatedDate(),schedule.getModifiedDate(),commentResponse);
-    }
-
-
-    @Transactional(readOnly = true)
-    public List<GetScheduleResponse> getAllSchedules(String author) {
+    // 일정 전체 조회(수정일 내림차순)
+    public List<GetScheduleResponse> getAllSchedules(String userName) {
         List<Schedule> schedules;
-        if(author==null){
-            schedules = scheduleRepository.findAll().stream().toList();
-        }else{
-            schedules = scheduleRepository.findAll().stream().filter(
-                    schedule -> schedule.getAuthor().equals(author)).toList();
+        if(userName==null){
+            schedules = scheduleRepository.findAll();
+        }else {
+            schedules = scheduleRepository.findAllByUserName(userName);
         }
-        return schedules.stream().map(schedule -> new GetScheduleResponse(schedule.getId(), schedule.getTitle(), schedule.getContent(),
-                schedule.getAuthor(), schedule.getCreatedDate(), schedule.getModifiedDate())).toList();
+        return schedules.stream()
+                .sorted(Comparator.comparing(Schedule::getModifiedDate).reversed())
+                .map(GetScheduleResponse::from).toList();
     }
 
-    public ModifyScheduleResponse modifySchedule(Long scheduleId, String password, String author, String title)throws Exception {
-        Schedule schedule = exceptionHandler.validateModifyScheduleRequest(scheduleId, password, author, title, scheduleRepository);
-        if(author!=null && !author.isBlank()){
-            // 작성자명을 전달받은 경우 수정
-            schedule.setAuthor(author);
+    // 일정 수정
+    @Transactional
+    public UpdateScheduleResponse modifySchedule(
+            SessionUser sessionUser, Long scheduleId, @Valid UpdateScheduleRequest request) {
+        // 로그인 한 유저와 일정 작성 유저가 일치하는지 확인
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
+                () -> new NoSuchScheduleException("존재하지 않는 일정입니다.")
+        );
+        if(!Objects.equals(sessionUser.getId(), schedule.getUser().getId())){
+                throw new UnAuthorizedUserException("일정 수정 권한이 없는 유저입니다.");
         }
-        if(title!=null && !title.isBlank()){
-            // 일정 제목을 전달받은 경우 수정
-            schedule.setTitle(title);
+        // 수정할 값이 들어오면 수정
+        if(request.getTitle()!=null){
+            schedule.setTitle(request.getTitle());
         }
-        // 수정일을 수정한 시점으로 변경
+        if(request.getContent()!=null){
+            schedule.setContent(request.getContent());
+        }
         schedule.setModifiedDate(LocalDateTime.now());
-
-        return new ModifyScheduleResponse(schedule.getId(),schedule.getTitle(), schedule.getContent(),
-                schedule.getAuthor(),schedule.getCreatedDate(),schedule.getModifiedDate());
+        return UpdateScheduleResponse.from(schedule);
     }
 
-    public void deleteSchedule(Long scheduleId,String password) throws Exception{
-        exceptionHandler.validateDeleteScheduleRequest(scheduleId,password,scheduleRepository);
+
+    @Transactional
+    public void deleteSchedule(SessionUser sessionUser, Long scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
+                () -> new NoSuchScheduleException("존재하지 않는 일정입니다.")
+        );
+        // 로그인 한 유저와 일정 작성 유저가 일치하는지 확인
+        if(!Objects.equals(sessionUser.getId(), schedule.getUser().getId())){
+            throw new UnAuthorizedUserException("일정 삭제 권한이 없는 유저입니다.");
+        }
         scheduleRepository.deleteById(scheduleId);
+    }
+
+    public Schedule getScheduleById(Long scheduleId) {
+        return scheduleRepository.findById(scheduleId).orElseThrow(
+                () -> new NoSuchScheduleException("존재하지 않는 일정입니다.")
+        );
     }
 }

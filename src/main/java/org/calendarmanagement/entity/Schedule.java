@@ -16,30 +16,25 @@ import java.util.List;
 public class Schedule extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="SCHEDULE_ID")
+    @Column(name="schedule_id")
     private Long id;
 
-    @Setter
-    @Column(length = 30, nullable = false)
+    // user가 있어야 일정도 있음
+    @ManyToOne(fetch = FetchType.LAZY,optional = false)
+    @JoinColumn(name = "user_id",nullable = false)
+    private User user;
 
+    @Setter
+    @Column(nullable = false)
     private String title;
 
-    @Column(length = 200, nullable = false)
+    @Setter
+    @Column(nullable = false)
     private String content;
 
-    @Setter
-    @Column(length = 15, nullable = false)
-    private String author;
-
-    @Column(length = 20, nullable = false)
-    private String password;
-
-    public Schedule(String title, String content, String author, String password) {
+    public Schedule( User user, String title, String content) {
+        this.user = user;
         this.title = title;
         this.content = content;
-        this.author = author;
-        this.password = password;
     }
-
-
 }
