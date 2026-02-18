@@ -1,8 +1,9 @@
 package org.calendarmanagement.service;
 
 import lombok.RequiredArgsConstructor;
-import org.calendarmanagement.exception.NoSuchCommentException;
-import org.calendarmanagement.exception.UnAuthorizedUserException;
+import org.calendarmanagement.exception.CommentException;
+import org.calendarmanagement.exception.ErrorCode;
+import org.calendarmanagement.exception.UserException;
 import org.calendarmanagement.dto.commentDto.request.CreateCommentRequest;
 import org.calendarmanagement.dto.commentDto.request.UpdateCommentRequest;
 import org.calendarmanagement.dto.commentDto.response.CreateCommentResponse;
@@ -30,6 +31,9 @@ public class CommentService {
     // 댓글 생성
     @Transactional
     public CreateCommentResponse save(SessionUser sessionUser, Long scheduleId, CreateCommentRequest request) {
+        if(sessionUser==null){
+            throw new UserException(ErrorCode.UNAUTHENTICATED_USER);
+        }
         Schedule schedule = scheduleService.getScheduleById(scheduleId);
         User user = userService.getUserById(sessionUser.getId());
         Comment comment = new Comment(schedule, user, request.getContent());
@@ -40,7 +44,7 @@ public class CommentService {
     // 댓글 단건 조회
     public GetCommentResponse getOneComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new NoSuchCommentException("존재하지 않는 댓글입니다.")
+                () -> new CommentException(ErrorCode.NO_SUCH_COMMENT)
         );
         return GetCommentResponse.of(comment);
     }
@@ -51,11 +55,11 @@ public class CommentService {
     @Transactional
     public UpdateCommentResponse update(SessionUser sessionUser, Long commentId, UpdateCommentRequest request) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new NoSuchCommentException("존재하지 않는 댓글입니다.")
+                () -> new CommentException(ErrorCode.NO_SUCH_COMMENT)
         );
         // 로그인 한 유저가 댓글을 단 유저가 맞는지 확인
         if(!Objects.equals(sessionUser.getId(), comment.getUser().getId())){
-            throw new UnAuthorizedUserException("댓글 수정 권한이 없는 유저입니다.");
+            throw new UserException(ErrorCode.UNAUTHORIZED_USER);
         }
         comment.setContent(request.getContent());
         comment.setModifiedDate(LocalDateTime.now());
@@ -67,7 +71,7 @@ public class CommentService {
     public void deleteComment(Long commentId) {
         boolean existence = commentRepository.existsById(commentId);
         if(!existence){
-            throw new NoSuchCommentException("존재하지 않는 댓글입니다.");
+            throw new CommentException(ErrorCode.NO_SUCH_COMMENT);
         }
         commentRepository.deleteById(commentId);
     }

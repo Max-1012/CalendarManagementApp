@@ -1,12 +1,11 @@
 package org.calendarmanagement.exception;
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 @Getter
 public class CustomServiceException extends RuntimeException{
-    private final HttpStatus status;
+    private final ErrorCode errorCode;
 
-    public CustomServiceException(HttpStatus status, String message) {
-        super(message);
-        this.status = status;
+    public CustomServiceException(ErrorCode errorCode) {
+        super(errorCode.getMessage());
+        this.errorCode = errorCode;
     }
 }

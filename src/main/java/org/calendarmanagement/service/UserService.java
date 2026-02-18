@@ -2,10 +2,8 @@ package org.calendarmanagement.service;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.calendarmanagement.exception.DuplicateEmailException;
-import org.calendarmanagement.exception.DuplicateUserNameException;
-import org.calendarmanagement.exception.NoSuchUserException;
-import org.calendarmanagement.exception.PasswordMismatchException;
+import org.calendarmanagement.exception.ErrorCode;
+import org.calendarmanagement.exception.UserException;
 import org.calendarmanagement.config.PasswordEncoder;
 import org.calendarmanagement.dto.userDto.request.UpdateUserRequest;
 import org.calendarmanagement.dto.userDto.response.GetUserResponse;
@@ -31,23 +29,25 @@ public class UserService {
     @Transactional
     public SignUpResponse createUser(@Valid SignUpRequest request) {
         boolean existence = userRepository.existsByUserName(request.getUserName());
-        if(existence){throw new DuplicateUserNameException("이미 존재하는 이름입니다.");}
+        if(existence){throw new UserException(ErrorCode.DUPLICATE_USERNAME);}
+
         existence = userRepository.existsByEmail(request.getEmail());
-        if(existence){throw new DuplicateEmailException("이미 존재하는 이메일입니다.");}
+        if(existence){throw new UserException(ErrorCode.DUPLICATE_EMAIL);}
 
         User user = new User(request.getUserName(), request.getEmail(), passwordEncoder.encode(request.getPassword()));
         User savedUser = userRepository.save(user);
         return SignUpResponse.of(savedUser);
     }
 
+
     // 로그인
     @Transactional
     public SessionUser login(@Valid LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow(
-                () -> new NoSuchUserException("존재하지 않는 유저입니다.")
+                () -> new UserException(ErrorCode.NO_SUCH_USER)
         );
         if(!passwordEncoder.matches(request.getPassword(),user.getPassword())){
-            throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
+            throw new UserException(ErrorCode.MISMATCH_PASSWORD);
         }
         return SessionUser.from(user);
     }
@@ -61,7 +61,7 @@ public class UserService {
     // 유저 단건 조회
     public GetUserResponse getOneUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
-                () -> new NoSuchUserException("존재하지 않는 유저입니다.")
+                () -> new UserException(ErrorCode.NO_SUCH_USER)
         );
         return GetUserResponse.of(user);
     }
@@ -70,7 +70,7 @@ public class UserService {
     @Transactional
     public GetUserResponse update(Long id, UpdateUserRequest request) {
         User user = userRepository.findById(id).orElseThrow(
-                () -> new NoSuchUserException("존재하지 않는 유저입니다.")
+                () -> new UserException(ErrorCode.NO_SUCH_USER)
         );
         // 더티체킹
         user.setUserName(request.getUserName());
@@ -85,7 +85,7 @@ public class UserService {
 
     public User getUserById(Long userId){
         return userRepository.findById(userId).orElseThrow(
-                () -> new NoSuchUserException("존재하지 않는 유저입니다.")
+                () -> new UserException(ErrorCode.NO_SUCH_USER)
         );
     }
 }
