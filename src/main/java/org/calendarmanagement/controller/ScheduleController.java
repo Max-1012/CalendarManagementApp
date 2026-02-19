@@ -2,6 +2,7 @@ package org.calendarmanagement.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.calendarmanagement.dto.ApiResponse;
 import org.calendarmanagement.dto.scheduleDto.request.CreateScheduleRequest;
 import org.calendarmanagement.dto.scheduleDto.request.UpdateScheduleRequest;
 import org.calendarmanagement.dto.scheduleDto.response.CreateScheduleResponse;
@@ -24,12 +25,12 @@ public class ScheduleController {
 
     // 일정 생성
     @PostMapping("/schedules")
-    public ResponseEntity<CreateScheduleResponse> saveSchedule(
+    public ResponseEntity<ApiResponse<CreateScheduleResponse>> saveSchedule(
             @SessionAttribute(name = "loginUser",required = false) SessionUser sessionUser,
             @Valid @RequestBody CreateScheduleRequest request)
     {
         CreateScheduleResponse response = scheduleService.save(sessionUser,request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
     }
 
     // 일정 단건 조회

@@ -31,7 +31,6 @@ import java.util.Objects;
 @Transactional(readOnly = true)
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
-    //private final CommentService commentService;
     private final UserService userService;
     private final CommentRepository commentRepository;
 
@@ -44,7 +43,7 @@ public class ScheduleService {
         // 유저 확인
         User user = userService.getUserById(sessionUser.getId());
         // 일정 생성
-        Schedule newSchedule = new Schedule(user, request.getTitle(), request.getContent());
+        Schedule newSchedule = new Schedule(user, request.title(), request.content());
         // 일정 저장
         Schedule savedSchedule = scheduleRepository.save(newSchedule);
         return CreateScheduleResponse.from(user,savedSchedule);
@@ -88,11 +87,11 @@ public class ScheduleService {
                 throw new UserException(ErrorCode.UNAUTHORIZED_USER);
         }
         // 수정할 값이 들어오면 수정
-        if(request.getTitle()!=null){
-            schedule.setTitle(request.getTitle());
+        if(request.title()!=null){
+            schedule.setTitle(request.title());
         }
-        if(request.getContent()!=null){
-            schedule.setContent(request.getContent());
+        if(request.content()!=null){
+            schedule.setContent(request.content());
         }
         schedule.setModifiedDate(LocalDateTime.now());
         return UpdateScheduleResponse.of(schedule);

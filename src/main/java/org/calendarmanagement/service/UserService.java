@@ -28,13 +28,13 @@ public class UserService {
     // 유저 생성
     @Transactional
     public SignUpResponse createUser(@Valid SignUpRequest request) {
-        boolean existence = userRepository.existsByUserName(request.getUserName());
+        boolean existence = userRepository.existsByUserName(request.userName());
         if(existence){throw new UserException(ErrorCode.DUPLICATE_USERNAME);}
 
-        existence = userRepository.existsByEmail(request.getEmail());
+        existence = userRepository.existsByEmail(request.email());
         if(existence){throw new UserException(ErrorCode.DUPLICATE_EMAIL);}
 
-        User user = new User(request.getUserName(), request.getEmail(), passwordEncoder.encode(request.getPassword()));
+        User user = new User(request.userName(), request.email(), passwordEncoder.encode(request.password()));
         User savedUser = userRepository.save(user);
         return SignUpResponse.of(savedUser);
     }
@@ -43,10 +43,10 @@ public class UserService {
     // 로그인
     @Transactional
     public SessionUser login(@Valid LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(
+        User user = userRepository.findByEmail(request.email()).orElseThrow(
                 () -> new UserException(ErrorCode.NO_SUCH_USER)
         );
-        if(!passwordEncoder.matches(request.getPassword(),user.getPassword())){
+        if(!passwordEncoder.matches(request.password(),user.getPassword())){
             throw new UserException(ErrorCode.MISMATCH_PASSWORD);
         }
         return SessionUser.from(user);
@@ -73,7 +73,7 @@ public class UserService {
                 () -> new UserException(ErrorCode.NO_SUCH_USER)
         );
         // 더티체킹
-        user.setUserName(request.getUserName());
+        user.setUserName(request.userName());
         return GetUserResponse.of(user);
     }
 

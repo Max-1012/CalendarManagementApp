@@ -36,7 +36,7 @@ public class CommentService {
         }
         Schedule schedule = scheduleService.getScheduleById(scheduleId);
         User user = userService.getUserById(sessionUser.getId());
-        Comment comment = new Comment(schedule, user, request.getContent());
+        Comment comment = new Comment(schedule, user, request.content());
         Comment savedComment = commentRepository.save(comment);
         return CreateCommentResponse.of(savedComment);
     }
@@ -61,7 +61,7 @@ public class CommentService {
         if(!Objects.equals(sessionUser.getId(), comment.getUser().getId())){
             throw new UserException(ErrorCode.UNAUTHORIZED_USER);
         }
-        comment.setContent(request.getContent());
+        comment.setContent(request.content());
         comment.setModifiedDate(LocalDateTime.now());
         return UpdateCommentResponse.of(comment);
     }
